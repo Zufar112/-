@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подарок для тебя</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0d0d0d;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .falling-heart {
+      position: absolute;
+      top: -10px;
+      color: pink;
+      font-size: 12px;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+
+    .heart-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px;
+      height: 160px;
+      background: red;
+      border-radius: 50%;
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .heart-button::before,
+    .heart-button::after {
+      content: "";
+      position: absolute;
+      width: 80px;
+      height: 120px;
+      background: red;
+      border-radius: 50%;
+      top: 0;
+    }
+
+    .heart-button::before {
+      left: -40px;
+    }
+
+    .heart-button::after {
+      right: -40px;
+    }
+
+    .message, .final-message {
+      position: absolute;
+      top: 65%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+
+    .gift-box {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(45deg, #ff5e62, #ff9966);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 100, 100, 0.8);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+
+    .gift-box.shake {
+      animation: shake 0.5s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      25% { transform: translate(-50%, -50%) rotate(1deg); }
+      50% { transform: translate(-50%, -50%) rotate(-1deg); }
+      75% { transform: translate(-50%, -50%) rotate(1deg); }
+      100% { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+
+    .gift-box::before {
+      content: "🎁";
+      font-size: 48px;
+    }
+
+    .final-hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 100;
+    }
+
+    .final-heart {
+      position: absolute;
+      font-size: 24px;
+      animation: fly 3s ease-out forwards;
+    }
+
+    @keyframes fly {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-300px) scale(1.5); opacity: 0; }
+    }
+
+    .final-message {
+      animation: glow 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { color: #fff; text-shadow: 0 0 10px red; }
+      to { color: #ff99cc; text-shadow: 0 0 20px pink, 0 0 30px red; }
+    }
+
+    .signature {
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="heart-button" id="heart">
+    <div>тебе</div>
+    <div>подарок</div>
+  </div>
+  <div class="message" id="message">точно хочешь его получить?</div>
+  <div class="gift-box" id="gift"></div>
+  <div class="final-hearts" id="finalHearts"></div>
+  <div class="final-message" id="finalMessage">Я ТЕБЯ ОЧЕНЬ СИЛЬНО ЛЮБЛЮ</div>
+  <div class="signature">agrocat</div>
+
+  <script>
+    const heart = document.getElementById('heart');
+    const message = document.getElementById('message');
+    const gift = document.getElementById('gift');
+    const finalHearts = document.getElementById('finalHearts');
+    const finalMessage = document.getElementById('finalMessage');
+
+    let stage = 0;
+    let clickCount = 0;
+
+    heart.addEventListener('click', () => {
+      if (stage === 0) {
+        heart.style.display = 'none';
+        message.style.display = 'block';
+        stage = 1;
+      }
+    });
+
+    message.addEventListener('click', () => {
+      if (stage === 1) {
+        message.style.display = 'none';
+        gift.style.display = 'flex';
+        stage = 2;
+      }
+    });
+
+    gift.addEventListener('click', () => {
+      navigator.vibrate(10);
+      clickCount++;
+      if (clickCount >= 6 && clickCount < 8) {
+        gift.classList.add('shake');
+      }
+      if (clickCount >= 8) {
+        gift.classList.remove('shake');
+        gift.style.display = 'none';
+        showFinal();
+      }
+    });
+
+    function showFinal() {
+      finalMessage.style.display = 'block';
+      for (let i = 0; i < 150; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'final-heart';
+        heart.textContent = '❤';
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.top = '50%';
+        heart.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        finalHearts.appendChild(heart);
+      }
+    }
+
+    function createFallingHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'falling-heart';
+      heart.textContent = '❤';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = Math.random() * 10 + 10 + 'px';
+      heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 5000);
+    }
+    setInterval(createFallingHeart, 150);
+  </script>
+</body>
+</html>
